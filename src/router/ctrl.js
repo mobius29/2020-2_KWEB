@@ -1,7 +1,8 @@
 // GET /
 const indexPage = async (req, res, next) => {
     try {
-        res.render('index.pug');
+        user = req.session.user;
+        res.render('index.pug', { user } );
     } catch (err) {
         next(err);
     }

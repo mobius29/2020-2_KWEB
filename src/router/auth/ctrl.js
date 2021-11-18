@@ -5,7 +5,7 @@ const error_handler = require("../../lib/error-handler");
 // GET /auth/sign_in
 const signInForm = async (req, res, next) => {
     try {
-        const {user} = req.session;
+        const { user } = req.session;
 
         if(user != undefined) res.redirect('/');
         else res.render('./auth/sign-in.pug');
@@ -18,23 +18,22 @@ const signIn = async (req, res, next) => {
     try{
         const {username} = req.body;
         const {password} = req.body;
-        const {displayName} = req.body;
 
         if (!username || !password) throw new Error('BAD_REQUEST');
 
-        const [sql_getpw] = "SELECT id, username, displayName, password, isActive, isStaff FROM user WHERE username = ?;";
-        const get_pw = database.runQuery(sql_getpw, [username]);
+        const sql_getpw = "SELECT id, username, displayName, password, isActive, isStaff FROM users WHERE username = ?;";
+        const [get_pw] = await database.runQuery(sql_getpw, [username]);
         if (!get_pw) throw new Error('UNAUTHORIZED');
 
-        const verify = authentication.verifyPassword(sql_getpw['password'], get_pw);
+        const verify = authentication.verifyPassword(password, get_pw['password']);
         if(!verify) throw new Error('UNAUTHORIZED');
 
         req.session.user = {
-            id: parseInt(sql_getpw['id']),
+            id: parseInt(get_pw['id']),
             username: username,
-            displayName: displayName,
-            isActive: parseInt(sql_getpw['isActive']),
-            isStaff: parseInt(sql_getpw['isStaff']),
+            displayName: get_pw['displayName'],
+            isActive: parseInt(get_pw['isActive']),
+            isStaff: parseInt(get_pw['isStaff']),
         };
 
         res.redirect('/');
@@ -73,9 +72,8 @@ const signOut = async (req, res, next) => {
     try{
         req.session.destroy(err => {
             if (err) throw new Error('BAD_REQUEST');
-            else res.send('Destroy Completed\n');
+            res.redirect('/');
         });
-        res.redirect('/');
     } catch(err){
         next(err);
     }
