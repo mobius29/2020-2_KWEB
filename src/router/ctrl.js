@@ -1,5 +1,3 @@
-const app = require("../app");
-
 // GET /
 const indexPage = async (req, res, next) => {
     try {

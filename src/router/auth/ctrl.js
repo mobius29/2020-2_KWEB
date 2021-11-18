@@ -1,4 +1,3 @@
-const app = require("../../app");
 const database = require("../../lib/database");
 const authentication = require("../../lib/authentication");
 const error_handler = require("../../lib/error-handler");
@@ -23,7 +22,7 @@ const signIn = async (req, res, next) => {
 
         if (!username || !password) throw new Error('BAD_REQUEST');
 
-        const [sql_getpw] = "SELECT id, username, displayName, password, isActive, isStaff FROM user WHERE username = ?";
+        const [sql_getpw] = "SELECT id, username, displayName, password, isActive, isStaff FROM user WHERE username = ?;";
         const get_pw = database.runQuery(sql_getpw, [username]);
         if (!get_pw) throw new Error('UNAUTHORIZED');
 
@@ -60,12 +59,11 @@ const signUp = async (req, res, next) =>{
 
         if(!username || !password || !displayName) throw new Error('BAD_REQUEST');
 
-        const enc_pw = authentication.generatePassword(password);
-        
-        const sql = "INSERT INTO user (username, password, displayname) VALUES (?, ?, ?)";
-        database.runQuery(sql, [username, enc_pw, displayName]);
+        const enc_pw = await authentication.generatePassword(password);
+        const sql = "INSERT INTO users (username, password, displayName) VALUES (?, ?, ?);";
+        await database.runQuery(sql, [username, enc_pw, displayName]);
 
-        res.redirect('./auth/sign_in');
+        res.redirect('/auth/sign_in');
     } catch (err){
         next(err);
     }

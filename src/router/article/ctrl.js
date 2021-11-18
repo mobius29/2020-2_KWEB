@@ -50,7 +50,6 @@ const deleteArticle = async (req, res, next) => {
     }
 };
 
-
 module.exports = {
     readArticle,
     writeArticleForm,
