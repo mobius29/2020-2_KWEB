@@ -63,7 +63,7 @@ const signUp = async (req, res, next) =>{
         const enc_pw = authentication.generatePassword(password);
         
         const sql = "INSERT INTO user (username, password, displayname) VALUES (?, ?, ?)";
-        database.runQuery(sql, [username, password, displayName]);
+        database.runQuery(sql, [username, enc_pw, displayName]);
 
         res.redirect('./auth/sign_in');
     } catch (err){

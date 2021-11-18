@@ -9,6 +9,24 @@ const indexPage = async (req, res, next) => {
     }
 };
 
+const latestArticles = async (req, res, next) => {
+    try {
+        res.redirect('/articles');
+    } catch(err){
+        next(err);
+    }
+};
+
+const listArticles = async (req, res, next) => {
+    try {
+
+    } catch(err){
+        next(err);
+    }
+};
+
 module.exports = {
-    indexPage
+    indexPage,
+    latestArticles,
+    listArticles,
 };
