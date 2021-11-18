@@ -2,13 +2,11 @@ const database = require('../../lib/database');
 
 const readArticle = async (req, res, next) => {
     try{
-        user = req.session.user;
-        id = req.params.articleId;
-
-        const sql = "SELECT id, title, content, author, createdAt, lastUpdated FROM articles WHERE id=? AND isDeleted=0;";
-        article = await database.runQuery(sql, [id]);
-
-        console.log(article.createdAt);
+        const user = req.session.user;
+        const id = parseInt(req.params.articleId);
+        
+        const sql = "SELECT articles.id, title, content, author, createdAt, lastUpdated, displayName FROM users, articles WHERE articles.id=? AND articles.author=users.id AND isDeleted=0;";
+        const [article] = await database.runQuery(sql, [id]);
 
         res.render('./articles/details.pug', { user, article })
     } catch(err){
